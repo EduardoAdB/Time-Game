@@ -15,6 +15,8 @@ TagManager:
   - Chave1
   - Chave2
   - Pedra
+  - Mirror
+  - Receiver
   layers:
   - Default
   - TransparentFX
@@ -22,7 +24,7 @@ TagManager:
   - Ground
   - Water
   - UI
-  - 
+  - Laser
   - CasaPrimitiva
   - CasaMedieval
   - CasaContemporanea
