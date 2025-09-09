@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Contador : MonoBehaviour
 {
-    
     int tick;
     public int hora;
     int minuto;
@@ -19,11 +18,12 @@ public class Contador : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI epoca;
     int tickLog = 250;
-    public static bool isTimeFrozen = false;
+    public  static bool isTimeFrozen = false;
     public string era;
 
     #region 
     public static Contador instance;
+   
     private void Awake()
     {
         instance = this;

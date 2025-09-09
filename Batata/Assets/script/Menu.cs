@@ -18,4 +18,8 @@ public class MenuPrincipal : MonoBehaviour
         Debug.Log("Jogo fechado."); // Para teste no editor
     }
 
+    public void BacktoMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
 }
