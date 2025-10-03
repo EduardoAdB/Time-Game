@@ -6,17 +6,17 @@ TagManager:
   tags:
   - Ground
   - Structure
-  - Interruptor
   - Tocha
   - Parede
   - Portao
   - Porta
   - PortaoTrigger
-  - Chave1
-  - Chave2
   - Pedra
   - Mirror
   - Receiver
+  - ChaveINT
+  - Chave
+  - Interruptor
   layers:
   - Default
   - TransparentFX

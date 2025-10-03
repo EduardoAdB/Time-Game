@@ -1,4 +1,4 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -39,24 +39,33 @@ public class Contador : MonoBehaviour
         dia = 0;
         mes = 1;
         ano = 1;
-        era = "PrÈHistÛrica";
+        era = "Pr√©Hist√≥rica";
         
-    }        
-    public void Update()
+    }
+
+    public void AvancarEra()
     {
-        if ( CodigoSecreto.instance.resolvido == true)
+        if (era == "Pr√©Hist√≥rica")
         {
             era = "Medieval";
         }
-        if (ano == 4)
+        else if (era == "Medieval")
         {
-            era = "Contempor‚nea";
+            era = "Contempor√¢nea";
         }
-        if (ano == 8)
+        else if (era == "Contempor√¢nea")
         {
             era = "Moderna";
         }
-        
+        else if (era == "Moderna")
+        {
+            Debug.Log("üèÜ Todas as eras conclu√≠das!");
+        }
+    }
+
+    public void Update()
+    {
+      
 
         if (Input.GetKeyDown(KeyCode.G))
         {
@@ -122,7 +131,7 @@ public class Contador : MonoBehaviour
             string formattedMes = mes.ToString("D2");
             string formattedAno = ano.ToString("D2");
             //:{formattedHora}:{formattedMinuto}:{formattedSegundo}
-            tempo.text = $"O tempo È {formattedAno}:{formattedMes}:{formattedDia}";
+            tempo.text = $"O tempo √© {formattedAno}:{formattedMes}:{formattedDia}";
             epoca.text = $"Era {era}";
         }
     }
@@ -132,7 +141,7 @@ public class Contador : MonoBehaviour
         switch (mes)
         {
             case 1: // Janeiro
-            case 3: // MarÁo
+            case 3: // Mar√ßo
             case 5: // Maio
             case 7: // Julho
             case 8: // Agosto
@@ -147,7 +156,7 @@ public class Contador : MonoBehaviour
             case 2: // Fevereiro
                 return IsLeapYear(ano) ? 29 : 28;
             default:
-                throw new System.ArgumentOutOfRangeException("MÍs inv·lido");
+                throw new System.ArgumentOutOfRangeException("M√™s inv√°lido");
         }
     }
 

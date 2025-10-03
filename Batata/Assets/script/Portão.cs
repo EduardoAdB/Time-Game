@@ -11,8 +11,8 @@ public class CodigoSecreto : MonoBehaviour
     }
 
     [Header("Puzzle dos Interruptores")]
-    public GameObject[] interruptores;
-    public int[] ordemCorreta;
+    public GameObject[] interruptores; // Lista dos interruptores
+    public int[] ordemCorreta;         // Sequência correta
     public float tempoMaximo = 15f;
 
     private int indiceAtual = 0;
@@ -21,24 +21,14 @@ public class CodigoSecreto : MonoBehaviour
 
     [Header("Portão Final")]
     public GameObject portao;
-    public SpriteRenderer portaoRenderer;
     public Collider2D portaoCollider;
     public GameObject mensagemAbrirPortaoUI;
 
     private bool jogadorPertoDoPortao = false;
-    private GameObject jogador;
 
-    [Header("Chaves")]
-
-    public GameObject chave1Prefab;
-    public GameObject chave2Prefab;
-
-    private GameObject chave1Instanciada;
-    private GameObject chave2Instanciada;
-
-    public bool temChave1 = false;
-    public bool temChave2 = false;
-
+    [Header("Chave Única")]
+    public GameObject chavePrefab;
+    public bool temChave = false;
 
     public bool resolvido = false;
 
@@ -50,28 +40,21 @@ public class CodigoSecreto : MonoBehaviour
         if (mensagemAbrirPortaoUI != null)
             mensagemAbrirPortaoUI.SetActive(false);
 
-        if (chave1Prefab != null)
+        // Spawn da chave no mapa
+        if (chavePrefab != null)
         {
-            chave1Instanciada = Instantiate(chave1Prefab, new Vector3(-34.581f, -19.546f, 0), Quaternion.identity);
+            Instantiate(chavePrefab, new Vector3(-32.581f, -19.546f, 0), Quaternion.identity);
         }
-
-        if (chave2Prefab != null)
-        {
-            chave2Instanciada = Instantiate(chave2Prefab, new Vector3(60.39f, 17.49f, 0), Quaternion.identity);
-        }
-
-
     }
 
     void Update()
     {
-
         if (resolvido)
         {
             VerificarInteracaoPortao();
         }
 
-        // ⏳ Contador de tempo (apenas se não estiver resolvido nem congelado)
+        // Contador de tempo
         if (!resolvido && !Contador.isTimeFrozen)
         {
             tempoRestante -= Time.deltaTime;
@@ -82,34 +65,53 @@ public class CodigoSecreto : MonoBehaviour
             }
         }
 
-        // 🎮 Interação com interruptores (permitida mesmo com tempo congelado)
-        if (!resolvido && interruptorAtual != null && Input.GetKeyDown(KeyCode.E))
+        // Ativar interruptor apenas se player estiver encostando e apertar E
+        if (!resolvido && temChave && interruptorAtual != null && Input.GetKeyDown(KeyCode.E))
         {
+            Debug.Log("🔘 [Update] Jogador pressionou E perto de: " + interruptorAtual.name);
             Interruptor interruptor = interruptorAtual.GetComponent<Interruptor>();
             if (interruptor != null)
             {
-                AcionarInterruptor(interruptor.id);
+                AcionarInterruptor(interruptor.id, interruptor.gameObject);
+            }
+            else
+            {
+                Debug.LogWarning("⚠ Nenhum componente 'Interruptor' encontrado em: " + interruptorAtual.name);
             }
         }
     }
 
-
-    void VerificarInteracaoPortao()
+    public void VerificarInteracaoPortao()
     {
-        if (resolvido && temChave1 && temChave2 && Input.GetKeyDown(KeyCode.E))
+        if (resolvido && temChave && Input.GetKeyDown(KeyCode.E))
         {
+            Debug.Log("🚪 Jogador apertou E no portão.");
             AbrirPortaoFinal();
         }
-
     }
 
-    public void AcionarInterruptor(int id)
+    public void AcionarInterruptor(int id, GameObject obj)
     {
         if (resolvido) return;
 
+        // 🚨 Proteção contra erro de índice
+        if (ordemCorreta == null || ordemCorreta.Length == 0)
+        {
+            Debug.LogError("⚠️ ordemCorreta não foi configurada no Inspector!");
+            return;
+        }
+
+        if (indiceAtual < 0 || indiceAtual >= ordemCorreta.Length)
+        {
+            Debug.LogError("⚠️ indiceAtual fora do limite! indiceAtual=" + indiceAtual + " | ordemCorreta.Length=" + ordemCorreta.Length);
+            GameOver(); // reinicia o puzzle
+            return;
+        }
+
         if (id == ordemCorreta[indiceAtual])
         {
-            Debug.Log("Interruptor correto: " + id);
+            Debug.Log("✅ Interruptor correto: " + id);
+            StartCoroutine(PiscarInterruptor(obj, Color.green));
             indiceAtual++;
 
             if (indiceAtual >= ordemCorreta.Length)
@@ -119,16 +121,17 @@ public class CodigoSecreto : MonoBehaviour
         }
         else
         {
-            Debug.Log("Erro! Sequência incorreta.");
+            Debug.Log("❌ Erro! Sequência incorreta. Reiniciando puzzle.");
             GameOver();
         }
     }
+
 
     public void PuzzleResolvido()
     {
         resolvido = true;
         AtualizarPortao(false);
-        Debug.Log("Puzzle resolvido! Agora pegue a chave e vá até o portão.");
+        Debug.Log("🎉 Puzzle resolvido! Vá até o portão para abrir.");
     }
 
     void GameOver()
@@ -136,49 +139,42 @@ public class CodigoSecreto : MonoBehaviour
         resolvido = false;
         indiceAtual = 0;
         tempoRestante = tempoMaximo;
-        Debug.Log("Tempo esgotado. Puzzle reiniciado.");
+        Debug.Log("⏳ Tempo esgotado ou erro na sequência. Puzzle reiniciado.");
     }
 
     void AtualizarPortao(bool abrir)
     {
-        bool mostrar = !abrir;
-
-        // Garante que o renderer principal seja escondido
         if (portao != null)
         {
-            SpriteRenderer mainRenderer = portao.GetComponent<SpriteRenderer>();
-            if (mainRenderer != null)
-                mainRenderer.enabled = mostrar;
+            SpriteRenderer sr = portao.GetComponent<SpriteRenderer>();
+            if (sr != null)
+                sr.enabled = !abrir;
         }
 
-        // Também esconde o colisor principal
         if (portaoCollider != null)
-            portaoCollider.enabled = mostrar;
+        {
+            portaoCollider.enabled = !abrir;
+            portaoCollider.isTrigger = abrir;
+        }
 
-        // Filhos
         foreach (Transform child in portao.transform)
         {
             SpriteRenderer sr = child.GetComponent<SpriteRenderer>();
             if (sr != null)
-                sr.enabled = mostrar;
+                sr.enabled = !abrir;
 
             Collider2D col = child.GetComponent<Collider2D>();
             if (col != null)
             {
-                col.enabled = mostrar;
+                col.enabled = !abrir;
                 col.isTrigger = abrir;
             }
         }
     }
 
-
-
-
-
-
     void AbrirPortaoFinal()
     {
-        Debug.Log("Portão final aberto com a chave!");
+        Debug.Log("🚪 Portão final aberto!");
         AtualizarPortao(true);
 
         if (mensagemAbrirPortaoUI != null)
@@ -191,7 +187,7 @@ public class CodigoSecreto : MonoBehaviour
         tempoRestante = tempoMaximo;
         resolvido = false;
         AtualizarPortao(false);
-        Debug.Log("Puzzle reiniciado.");
+        Debug.Log("🔄 Puzzle reiniciado.");
     }
 
     public float TempoRestante()
@@ -199,56 +195,72 @@ public class CodigoSecreto : MonoBehaviour
         return tempoRestante;
     }
 
-
-
+    public void PegarChave()
+    {
+        if (!temChave)
+        {
+            temChave = true;
+            Debug.Log("🗝️ Jogador pegou a chave.");
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("➡ [OnTriggerEnter2D] Colidiu com: " + other.name + " | Tag: " + other.tag);
+
         if (other.CompareTag("Interruptor"))
         {
             interruptorAtual = other.gameObject;
-            Debug.Log("Aperte 'E' para acionar o interruptor.");
+
+            // Deixa transparente indicando que pode interagir
+            SpriteRenderer sr = interruptorAtual.GetComponent<SpriteRenderer>();
+            if (sr != null)
+                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 0.5f);
+
+            Debug.Log("🔘 Jogador pode apertar E para acionar o interruptor: " + other.name);
         }
         else if (other.CompareTag("PortaoTrigger"))
         {
             jogadorPertoDoPortao = true;
 
-            if (resolvido && temChave1 && temChave2)
-
+            if (resolvido && temChave)
             {
                 mensagemAbrirPortaoUI.SetActive(true);
-                Debug.Log("Aperte 'E' para abrir o portão.");
+                Debug.Log("📢 UI do portão ativada.");
             }
         }
-        else if (other.CompareTag("Chave1"))
-        {
-            temChave1 = true;
-            Destroy(other.gameObject);
-            Debug.Log("Chave 1 coletada!");
-        }
-        else if (other.CompareTag("Chave2"))
-        {
-            temChave2 = true;
-            Destroy(other.gameObject);
-            Debug.Log("Chave 2 coletada!");
-        }
+        Debug.Log("➡ [OnTriggerEnter2D] Colidiu com: " + other.name + " | Tag: " + other.tag);
+        Destroy(chavePrefab);
+        temChave = true;
 
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
+        Debug.Log("⬅ [OnTriggerExit2D] Saiu de: " + other.name + " | Tag: " + other.tag);
+
         if (other.CompareTag("Interruptor") && other.gameObject == interruptorAtual)
         {
+            // Restaura a opacidade normal ao sair
+            SpriteRenderer sr = interruptorAtual.GetComponent<SpriteRenderer>();
+            if (sr != null)
+                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 1f);
+
+            Debug.Log("🔘 Saiu do interruptor: " + other.name);
             interruptorAtual = null;
         }
+    }
 
-        if (other.CompareTag("PortaoTrigger"))
+    // Coroutine para piscar verde quando acertar
+    IEnumerator PiscarInterruptor(GameObject obj, Color cor)
+    {
+        SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+        if (sr != null)
         {
-            jogadorPertoDoPortao = false;
-
-            if (mensagemAbrirPortaoUI != null)
-                mensagemAbrirPortaoUI.SetActive(false);
+            Color original = sr.color;
+            sr.color = cor;
+            yield return new WaitForSeconds(0.3f);
+            sr.color = new Color(original.r, original.g, original.b, 0.5f); // volta transparente enquanto player está colidindo
         }
-
     }
 }
