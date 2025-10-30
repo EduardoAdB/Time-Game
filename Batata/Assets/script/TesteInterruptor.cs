@@ -28,6 +28,7 @@ public class Teste : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             jogadorPerto = false;
+
             Debug.Log("⏹️ Player saiu do interruptor: " + gameObject.name);
         }
     }

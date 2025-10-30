@@ -21,16 +21,31 @@ public class TochaClickavel : MonoBehaviour
     {
         if (gerenciador != null)
         {
-            gerenciador.TentarClicar(cor);
+            gerenciador.TentarClicar(this); // 🔹 Passamos a própria tocha para o gerenciador
         }
     }
 
-    public IEnumerator Piscar()
+    public IEnumerator PiscarAcerto()
     {
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        Color originalColor = sr.color;
-        sr.color = Color.white;
-        yield return new WaitForSeconds(0.5f);
-        sr.color = originalColor;
+        if (sr != null)
+        {
+            Color originalColor = sr.color;
+            sr.color = Color.green; // 💚 Muda para verde
+            yield return new WaitForSeconds(0.3f);
+            sr.color = originalColor; // volta à cor original
+        }
     }
+    public IEnumerator PiscarErro()
+    {
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            Color originalColor = sr.color;
+            sr.color = Color.red; // 🔴 Pisca vermelho
+            yield return new WaitForSeconds(0.3f);
+            sr.color = originalColor;
+        }
+    }
+
 }

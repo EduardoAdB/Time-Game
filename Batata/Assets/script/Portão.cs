@@ -28,7 +28,7 @@ public class CodigoSecreto : MonoBehaviour
 
     [Header("Chave Única")]
     public GameObject chavePrefab;
-    public bool temChave = false;
+    
 
     public bool resolvido = false;
 
@@ -66,7 +66,7 @@ public class CodigoSecreto : MonoBehaviour
         }
 
         // Ativar interruptor apenas se player estiver encostando e apertar E
-        if (!resolvido && temChave && interruptorAtual != null && Input.GetKeyDown(KeyCode.E))
+        if (!resolvido && interruptorAtual != null && Input.GetKeyDown(KeyCode.E))
         {
             Debug.Log("🔘 [Update] Jogador pressionou E perto de: " + interruptorAtual.name);
             Interruptor interruptor = interruptorAtual.GetComponent<Interruptor>();
@@ -83,7 +83,7 @@ public class CodigoSecreto : MonoBehaviour
 
     public void VerificarInteracaoPortao()
     {
-        if (resolvido && temChave && Input.GetKeyDown(KeyCode.E))
+        if (resolvido  && Input.GetKeyDown(KeyCode.E))
         {
             Debug.Log("🚪 Jogador apertou E no portão.");
             AbrirPortaoFinal();
@@ -92,26 +92,14 @@ public class CodigoSecreto : MonoBehaviour
 
     public void AcionarInterruptor(int id, GameObject obj)
     {
+        Debug.Log("🎮 Tentando acionar interruptor ID " + id + " | Esperado: " + ordemCorreta[indiceAtual]);
+
         if (resolvido) return;
-
-        // 🚨 Proteção contra erro de índice
-        if (ordemCorreta == null || ordemCorreta.Length == 0)
-        {
-            Debug.LogError("⚠️ ordemCorreta não foi configurada no Inspector!");
-            return;
-        }
-
-        if (indiceAtual < 0 || indiceAtual >= ordemCorreta.Length)
-        {
-            Debug.LogError("⚠️ indiceAtual fora do limite! indiceAtual=" + indiceAtual + " | ordemCorreta.Length=" + ordemCorreta.Length);
-            GameOver(); // reinicia o puzzle
-            return;
-        }
 
         if (id == ordemCorreta[indiceAtual])
         {
             Debug.Log("✅ Interruptor correto: " + id);
-            StartCoroutine(PiscarInterruptor(obj, Color.green));
+            StartCoroutine(PiscarInterruptor(obj, Color.green)); // pisca verde
             indiceAtual++;
 
             if (indiceAtual >= ordemCorreta.Length)
@@ -125,7 +113,6 @@ public class CodigoSecreto : MonoBehaviour
             GameOver();
         }
     }
-
 
     public void PuzzleResolvido()
     {
@@ -195,14 +182,7 @@ public class CodigoSecreto : MonoBehaviour
         return tempoRestante;
     }
 
-    public void PegarChave()
-    {
-        if (!temChave)
-        {
-            temChave = true;
-            Debug.Log("🗝️ Jogador pegou a chave.");
-        }
-    }
+   
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -223,16 +203,17 @@ public class CodigoSecreto : MonoBehaviour
         {
             jogadorPertoDoPortao = true;
 
-            if (resolvido && temChave)
+            if (resolvido )
             {
                 mensagemAbrirPortaoUI.SetActive(true);
                 Debug.Log("📢 UI do portão ativada.");
             }
         }
-        Debug.Log("➡ [OnTriggerEnter2D] Colidiu com: " + other.name + " | Tag: " + other.tag);
-        Destroy(chavePrefab);
-        temChave = true;
-
+        else if (other.CompareTag("Chave"))
+        {
+            Destroy(other.gameObject);
+            
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)

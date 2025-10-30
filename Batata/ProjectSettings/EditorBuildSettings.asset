@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: 2ba8eae486c7b3145a7b19ac3c9c9cdd
   - enabled: 1
-    path: Assets/Scenes/Mapa0.5.unity
+    path: Assets/Scenes/MapaEnglish.unity
     guid: 9eff6cb735c753d40951cdc79a2852aa
   - enabled: 1
     path: Assets/Scenes/Options.unity

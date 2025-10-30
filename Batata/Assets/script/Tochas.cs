@@ -95,21 +95,31 @@ public class Tochas : MonoBehaviour
     }
 
 
-    public void TentarClicar(string cor)
+    public void TentarClicar(TochaClickavel tocha)
     {
         if (portaoAberto) return;
 
+        string cor = tocha.GetCor();
         cliquesDoJogador.Add(cor);
         int idx = cliquesDoJogador.Count - 1;
 
+        // Evita erro de índice caso clique fora da sequência
+        if (idx >= ordemCorreta.Count)
+        {
+            Debug.Log("❌ Clique extra! Reiniciando...");
+            StartCoroutine(tocha.PiscarErro());
+            ResetarTochas();
+            return;
+        }
+
         if (ordemCorreta[idx] == cor)
         {
-            Debug.Log("Cor correta clicada: " + cor);
+            Debug.Log("✅ Cor correta clicada: " + cor);
+            StartCoroutine(tocha.PiscarAcerto()); // 💚 Pisca verde
 
             if (cliquesDoJogador.Count == ordemCorreta.Count)
-            {     
-              
-                Debug.Log("Desafio completo! Portão pode ser aberto.");
+            {
+                Debug.Log("🎉 Desafio completo! Portão pode ser aberto.");
                 portaoAberto = true;
 
                 itemUI.SetActive(true);
@@ -119,18 +129,16 @@ public class Tochas : MonoBehaviour
 
                 if (portaoCollider != null)
                     portaoCollider.isTrigger = true;
-
-               
-
             }
-
         }
         else
         {
-            Debug.Log("Erro! Ordem incorreta. Clicou: " + cor + ", mas esperava: " + ordemCorreta[idx]);
+            Debug.Log("❌ Ordem incorreta. Clicou: " + cor + ", esperava: " + ordemCorreta[idx]);
+            StartCoroutine(tocha.PiscarErro()); // ❤️ Pisca vermelho se quiser mostrar o erro
             ResetarTochas();
         }
     }
+
 
 
 
@@ -158,8 +166,8 @@ public class Tochas : MonoBehaviour
             TochaClickavel tocha = tochas.Find(t => t.GetCor() == cor);
             if (tocha != null)
             {
-                yield return StartCoroutine(tocha.Piscar());
-                yield return new WaitForSeconds(0.2f);
+                yield return StartCoroutine(tocha.PiscarAcerto());
+                yield return new WaitForSeconds(0.3f);
             }
         }
     }

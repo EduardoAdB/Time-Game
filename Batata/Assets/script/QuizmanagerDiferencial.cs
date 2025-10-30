@@ -47,9 +47,11 @@ public class QuizManager : MonoBehaviour
         quizCanvas.SetActive(false);
 
         // Conectar botões
-        botaoA.onClick.AddListener(() => VerificarResposta("A)Enviar mensageiros a cavalo."));
-        botaoA.onClick.AddListener(() => VerificarResposta("A)Usar senhas fortes e autenticação de dois fatores."));
-        botaoB.onClick.AddListener(() => VerificarResposta("B)Criar armadilhas no caminho dele."));
+       
+
+        botaoA.onClick.AddListener(() => VerificarResposta("A)Usar senhas fortes e autenticação de dois fatores"));
+        botaoA.onClick.AddListener(() => VerificarResposta("A)Enviar mensageiros a cavalo"));
+        botaoB.onClick.AddListener(() => VerificarResposta("B)Criar armadilhas no caminho dele"));
     }
 
     public void AtivarQuiz(Collider2D ponte)
@@ -65,9 +67,18 @@ public class QuizManager : MonoBehaviour
 
         // Selecionar pergunta aleatória
         SortearPergunta();
+        // Pausa o jogador
+        var jogador = GameObject.FindGameObjectWithTag("Player");
+        if (jogador != null)
+        {
+            var mover = jogador.GetComponent<player>();
+            if (mover != null)
+                mover.enabled = false;
+        }
+
     }
 
-   public void SortearPergunta()
+    public void SortearPergunta()
     {
         perguntaAtual = perguntas[Random.Range(0, perguntas.Count)];
 
@@ -77,7 +88,7 @@ public class QuizManager : MonoBehaviour
         textoBotaoB.text = perguntaAtual.alternativaB;
     }
 
-    void VerificarResposta(string escolha)
+ public   void VerificarResposta(string escolha)
     {
         if (escolha == perguntaAtual.respostaCorreta)
         {
@@ -106,5 +117,30 @@ public class QuizManager : MonoBehaviour
         quizAtivo = false;
         quizCanvas.SetActive(false);
         Time.timeScale = 1f;
+
+        // 🧩 Reativa física e movimento
+        var jogador = GameObject.FindGameObjectWithTag("Player");
+        if (jogador != null)
+        {
+            Rigidbody2D rb = jogador.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.velocity = Vector2.zero;
+                rb.simulated = false;
+                rb.simulated = true;
+            }
+
+            var mover = jogador.GetComponent<player>();
+            if (mover != null)
+                mover.enabled = true;
+        }
+
+        Debug.Log("✅ Quiz fechado e jogador destravado.");
+
+       
+       
+
     }
+
+
 }

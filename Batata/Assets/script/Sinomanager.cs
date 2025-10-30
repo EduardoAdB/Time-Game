@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -34,34 +35,66 @@ public class SinoManager : MonoBehaviour
             tilemapParaAtivar.gameObject.SetActive(true);
     }
 
-    public void SinoTocado(string cor)
+    // ✅ Método principal chamado pelo SinoClickavel
+    public void SinoTocado(SinoClickavel sino)
     {
         if (puzzleResolvido)
         {
-            Debug.Log("⛔ Puzzle já resolvido. Ignorando toque no sino: " + cor);
+            Debug.Log("⛔ Puzzle já resolvido. Ignorando toque no sino: " + sino.corDoSino);
             return;
         }
 
-        ordemDoJogador.Add(cor);
-        Debug.Log("🔔 Sino tocado: " + cor + " | Posição na sequência: " + ordemDoJogador.Count);
-
+        ordemDoJogador.Add(sino.corDoSino);
         int idx = ordemDoJogador.Count - 1;
 
-        if (ordemCorreta[idx] == cor)
+        Debug.Log("🔔 Sino tocado: " + sino.corDoSino + " | Posição na sequência: " + ordemDoJogador.Count);
+
+        // ⚠️ Proteção contra índice fora do limite
+        if (idx >= ordemCorreta.Count)
+        {
+            Debug.LogWarning("❌ Tocou sinos a mais! Reiniciando sequência.");
+            StartCoroutine(sino.PiscarErro());
+            ResetarSequencia();
+            return;
+        }
+
+        // ✅ Comparar com a ordem correta
+        if (ordemCorreta[idx] == sino.corDoSino)
         {
             Debug.Log("✅ Cor correta! Esperado: " + ordemCorreta[idx]);
+            StartCoroutine(sino.PiscarAcerto());
 
+            // Se completou toda a ordem
             if (ordemDoJogador.Count == ordemCorreta.Count)
             {
-                Debug.Log("🎉 Puzzle dos sinos resolvido! Ativando tilemap...");
                 puzzleResolvido = true;
+                Debug.Log("🎉 Puzzle dos sinos resolvido! Ativando tilemap...");
                 AtivarTilemap();
+                StartCoroutine(PiscarTodosVerde());
             }
         }
         else
         {
-            Debug.Log("❌ Cor ERRADA! Tocou: " + cor + " | Esperado: " + ordemCorreta[idx]);
-            ordemDoJogador.Clear();
+            Debug.Log("❌ Cor ERRADA! Tocou: " + sino.corDoSino + " | Esperado: " + ordemCorreta[idx]);
+            StartCoroutine(sino.PiscarErro());
+            ResetarSequencia();
         }
+    }
+
+    void ResetarSequencia()
+    {
+        ordemDoJogador.Clear();
+        Debug.Log("🔄 Sequência reiniciada!");
+    }
+
+    // 🌟 Efeito visual ao completar (todos piscam verde)
+    IEnumerator PiscarTodosVerde()
+    {
+        foreach (var sino in sinos)
+        {
+            if (sino != null)
+                StartCoroutine(sino.PiscarAcerto());
+        }
+        yield return null;
     }
 }
