@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class QuizManager : MonoBehaviour
 {
-  static  public QuizManager instance;
-   public void Awake()
+    static public QuizManager instance;
+    public void Awake()
     {
         instance = this;
     }
@@ -20,9 +20,17 @@ public class QuizManager : MonoBehaviour
         public string alternativaC;
         public string respostaCorreta; // "A" ou "B"
 
+        // 👇 Adicionados para versão em inglês
+        [Header("Versão em Inglês")]
+        public string textoPerguntaEN;
+        public string alternativaAEN;
+        public string alternativaBEN;
+        public string alternativaCEN;
+        public string respostaCorretaEN;
+
         public Pergunta instance;
 
-      public void Awake()
+        public void Awake()
         {
             instance = this;
         }
@@ -45,6 +53,12 @@ public class QuizManager : MonoBehaviour
     private bool quizAtivo = false;
     public Collider2D ponteCollider; // referência da ponte bloqueada
 
+    // 👇 Novo campo para botão de idioma
+    [Header("Idioma")]
+    public Button botaoIdioma;
+    public TMP_Text textoBotaoIdioma;
+    private bool emIngles = false; // controla o idioma atual
+
     void Start()
     {
         quizCanvas.SetActive(false);
@@ -56,6 +70,10 @@ public class QuizManager : MonoBehaviour
         botaoA.onClick.AddListener(() => VerificarResposta("A)Criar armadilhas no caminho dele"));
         botaoB.onClick.AddListener(() => VerificarResposta("B)Enviar mensageiros a cavalo"));
         botaoC.onClick.AddListener(() => VerificarResposta("C)Usar senhas fortes e autenticação de dois fatores"));
+
+        // 👇 Listener do botão de idioma
+        if (botaoIdioma != null)
+            botaoIdioma.onClick.AddListener(TrocarIdioma);
     }
 
     public void AtivarQuiz(Collider2D ponte)
@@ -72,16 +90,39 @@ public class QuizManager : MonoBehaviour
         botaoC.interactable = true;
     }
 
-
     public void SortearPergunta()
     {
         perguntaAtual = perguntas[Random.Range(0, perguntas.Count)];
+        AtualizarTextoPergunta();
+    }
 
-        // Atualizar UI
-        perguntaTexto.text = perguntaAtual.textoPergunta;
-        textoBotaoA.text = perguntaAtual.alternativaA;
-        textoBotaoB.text = perguntaAtual.alternativaB;
-        textoBotaoC.text = perguntaAtual.alternativaC;
+    // 👇 Função auxiliar para atualizar texto conforme idioma
+    private void AtualizarTextoPergunta()
+    {
+        if (!emIngles)
+        {
+            perguntaTexto.text = perguntaAtual.textoPergunta;
+            textoBotaoA.text = perguntaAtual.alternativaA;
+            textoBotaoB.text = perguntaAtual.alternativaB;
+            textoBotaoC.text = perguntaAtual.alternativaC;
+        }
+        else
+        {
+            perguntaTexto.text = perguntaAtual.textoPerguntaEN;
+            textoBotaoA.text = perguntaAtual.alternativaAEN;
+            textoBotaoB.text = perguntaAtual.alternativaBEN;
+            textoBotaoC.text = perguntaAtual.alternativaCEN;
+        }
+    }
+
+    // 👇 Função do botão de troca de idioma
+    public void TrocarIdioma()
+    {
+        emIngles = !emIngles;
+        AtualizarTextoPergunta();
+
+        if (textoBotaoIdioma != null)
+            textoBotaoIdioma.text = emIngles ? "🇧🇷 PT-BR" : "🇺🇸 EN";
     }
 
     public void VerificarResposta(string escolha)
@@ -114,16 +155,12 @@ public class QuizManager : MonoBehaviour
         }
     }
 
-
-
-
     void FecharQuiz()
     {
         quizAtivo = false;
         quizCanvas.SetActive(false);
         Time.timeScale = 1f;
 
-        // 🧩 Reativa física e movimento
         var jogador = GameObject.FindGameObjectWithTag("Player");
         if (jogador != null)
         {
@@ -141,11 +178,5 @@ public class QuizManager : MonoBehaviour
         }
 
         Debug.Log("✅ Quiz fechado e jogador destravado.");
-
-       
-       
-
     }
-
-
 }

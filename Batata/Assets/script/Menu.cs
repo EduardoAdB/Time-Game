@@ -8,7 +8,11 @@ public class MenuPrincipal : MonoBehaviour
     {
         
         // Troca para a cena do jogo (coloque o nome exato da cena)
-        SceneManager.LoadScene("Mapa0.5");
+        SceneManager.LoadScene("MapaReal");
+    }
+    public void Help()
+    {
+               SceneManager.LoadScene("Ajuda");
     }
 
     public void Sair()
