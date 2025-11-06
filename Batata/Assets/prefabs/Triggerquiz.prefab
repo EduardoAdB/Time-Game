@@ -98,7 +98,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1462017276380664133
 RectTransform:
   m_ObjectHideFlags: 0
@@ -222,7 +222,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: A
+  m_text: B
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -442,7 +442,7 @@ GameObject:
   - component: {fileID: 9110052292525029773}
   - component: {fileID: 6037725879555541017}
   m_Layer: 5
-  m_Name: BotaoB
+  m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -627,7 +627,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: B
+  m_text: 'A
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -709,7 +711,7 @@ GameObject:
   - component: {fileID: 1105928358006124437}
   - component: {fileID: 6392076768758014430}
   m_Layer: 5
-  m_Name: BotaoA
+  m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -907,27 +909,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   perguntas:
-  - textoPergunta: 
-    alternativaA: 
-    alternativaB: 
-    alternativaC: 
-    respostaCorreta: 
-    textoPerguntaEN: 
-    alternativaAEN: 
-    alternativaBEN: 
-    alternativaCEN: 
-    respostaCorretaEN: 
+  - textoPergunta: "Os primeiros humanos precisavam ca\xE7ar para sobreviver. Qual
+      dessas op\xE7\xF5es era a melhor estrat\xE9gia para capturar um animal em regi\xF5es
+      com florestas densas e terreno irregular? "
+    alternativaA: "A)Correr atr\xE1s dele at\xE9 ele se cansar.  "
+    alternativaB: B)Criar armadilhas no caminho dele.
+    respostaCorreta: B)Criar armadilhas no caminho dele.
   quizCanvas: {fileID: 5641554537515541653}
   perguntaTexto: {fileID: 4458833166178601396}
   botaoA: {fileID: 6037725879555541017}
   botaoB: {fileID: 6392076768758014430}
-  botaoC: {fileID: 0}
   textoBotaoA: {fileID: 6876686262693484487}
   textoBotaoB: {fileID: 448339383542177237}
-  textoBotaoC: {fileID: 0}
   ponteCollider: {fileID: 724500499414479333}
-  botaoIdioma: {fileID: 0}
-  textoBotaoIdioma: {fileID: 0}
 --- !u!114 &4900571834182877293
 MonoBehaviour:
   m_ObjectHideFlags: 0

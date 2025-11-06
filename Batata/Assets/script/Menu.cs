@@ -14,6 +14,10 @@ public class MenuPrincipal : MonoBehaviour
     {
                SceneManager.LoadScene("Ajuda");
     }
+    public void Credits()
+    {
+        SceneManager.LoadScene("Créditos");
+    }
 
     public void Sair()
     {
