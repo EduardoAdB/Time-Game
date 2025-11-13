@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
 public class TochaClickavel : MonoBehaviour
 {
     private Tochas gerenciador;
     private string cor;
+    private bool jogadorPerto = false;
 
     public void Definir(Tochas t, string c)
     {
@@ -12,16 +14,37 @@ public class TochaClickavel : MonoBehaviour
         cor = c;
     }
 
-    public string GetCor() // ← ESSA PARTE É IMPORTANTE
+    public string GetCor()
     {
         return cor;
     }
 
-    private void OnMouseDown()
+    void Update()
     {
-        if (gerenciador != null)
+        // Quando o jogador está perto e pressiona T
+        if (jogadorPerto && Input.GetKeyDown(KeyCode.T))
         {
-            gerenciador.TentarClicar(this); // 🔹 Passamos a própria tocha para o gerenciador
+            if (gerenciador != null)
+            {
+                gerenciador.TentarClicar(this);
+            }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            jogadorPerto = true;
+            Debug.Log($"🕯️ Jogador perto da tocha {cor}");
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            jogadorPerto = false;
         }
     }
 
@@ -31,21 +54,21 @@ public class TochaClickavel : MonoBehaviour
         if (sr != null)
         {
             Color originalColor = sr.color;
-            sr.color = Color.green; // 💚 Muda para verde
+            sr.color = Color.green;
             yield return new WaitForSeconds(0.3f);
-            sr.color = originalColor; // volta à cor original
+            sr.color = originalColor;
         }
     }
+
     public IEnumerator PiscarErro()
     {
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null)
         {
             Color originalColor = sr.color;
-            sr.color = Color.red; // 🔴 Pisca vermelho
+            sr.color = Color.red;
             yield return new WaitForSeconds(0.3f);
             sr.color = originalColor;
         }
     }
-
 }

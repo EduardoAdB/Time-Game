@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class QuizManager : MonoBehaviour
 {
-    static public QuizManager instance;
+    public static QuizManager instance;
     public void Awake()
     {
         instance = this;
@@ -18,22 +18,14 @@ public class QuizManager : MonoBehaviour
         public string alternativaA;
         public string alternativaB;
         public string alternativaC;
-        public string respostaCorreta; // "A" ou "B"
+        public string respostaCorreta;
 
-        // 👇 Adicionados para versão em inglês
         [Header("Versão em Inglês")]
         public string textoPerguntaEN;
         public string alternativaAEN;
         public string alternativaBEN;
         public string alternativaCEN;
         public string respostaCorretaEN;
-
-        public Pergunta instance;
-
-        public void Awake()
-        {
-            instance = this;
-        }
     }
 
     [Header("Configurações do Quiz")]
@@ -50,14 +42,17 @@ public class QuizManager : MonoBehaviour
     public TMP_Text textoBotaoB;
     public TMP_Text textoBotaoC;
 
-    private bool quizAtivo = false;
-    public Collider2D ponteCollider; // referência da ponte bloqueada
+    [Header("Botão de Avançar Era")]
+    public GameObject botaoAvancarEra;
+    public TMP_Text textoBotaoAvancarEra;
 
-    // 👇 Novo campo para botão de idioma
+    private bool quizAtivo = false;
+    private bool emIngles = false;
+    public Collider2D ponteCollider;
+
     [Header("Idioma")]
     public Button botaoIdioma;
     public TMP_Text textoBotaoIdioma;
-    private bool emIngles = false; // controla o idioma atual
 
     void Start()
     {
@@ -67,24 +62,26 @@ public class QuizManager : MonoBehaviour
         botaoB.interactable = false;
         botaoC.interactable = false;
 
+        // listeners dos botões
         botaoA.onClick.AddListener(() => VerificarResposta("A)Criar armadilhas no caminho dele"));
         botaoB.onClick.AddListener(() => VerificarResposta("B)Enviar mensageiros a cavalo"));
         botaoC.onClick.AddListener(() => VerificarResposta("C)Usar senhas fortes e autenticação de dois fatores"));
 
-        // 👇 Listener do botão de idioma
         if (botaoIdioma != null)
             botaoIdioma.onClick.AddListener(TrocarIdioma);
+
+        if (botaoAvancarEra != null)
+            botaoAvancarEra.SetActive(false); // começa escondido
     }
 
     public void AtivarQuiz(Collider2D ponte)
     {
         quizAtivo = true;
         ponteCollider = ponte;
-        Time.timeScale = 0f;
+        Time.timeScale = 1f;
         quizCanvas.SetActive(true);
         SortearPergunta();
 
-        // Agora sim, habilita os botões
         botaoA.interactable = true;
         botaoB.interactable = true;
         botaoC.interactable = true;
@@ -94,9 +91,9 @@ public class QuizManager : MonoBehaviour
     {
         perguntaAtual = perguntas[Random.Range(0, perguntas.Count)];
         AtualizarTextoPergunta();
+
     }
 
-    // 👇 Função auxiliar para atualizar texto conforme idioma
     private void AtualizarTextoPergunta()
     {
         if (!emIngles)
@@ -115,7 +112,6 @@ public class QuizManager : MonoBehaviour
         }
     }
 
-    // 👇 Função do botão de troca de idioma
     public void TrocarIdioma()
     {
         emIngles = !emIngles;
@@ -129,7 +125,7 @@ public class QuizManager : MonoBehaviour
     {
         if (perguntaAtual == null)
         {
-            Debug.LogError("❌ Nenhuma pergunta atual definida! Certifique-se de chamar AtivarQuiz() antes de clicar em uma resposta.");
+            Debug.LogError("❌ Nenhuma pergunta atual definida!");
             return;
         }
 
@@ -140,18 +136,15 @@ public class QuizManager : MonoBehaviour
             if (ponteCollider != null)
                 Destroy(ponteCollider.gameObject);
 
-            Contador.instance.AvancarEra();
             FecharQuiz();
+            MostrarBotaoAvancarEra(); // 👈 aparece o botão só quando acertar
         }
         else
         {
             Debug.Log("❌ Resposta errada! Nova pergunta.");
 
-            // ⚠️ Se ponteCollider estiver nulo, não tente reativar o quiz
             if (ponteCollider != null)
                 AtivarQuiz(ponteCollider);
-            else
-                Debug.LogWarning("⚠️ ponteCollider está nulo, não foi possível reativar o quiz.");
         }
     }
 
@@ -159,7 +152,6 @@ public class QuizManager : MonoBehaviour
     {
         quizAtivo = false;
         quizCanvas.SetActive(false);
-        Time.timeScale = 1f;
 
         var jogador = GameObject.FindGameObjectWithTag("Player");
         if (jogador != null)
@@ -178,5 +170,29 @@ public class QuizManager : MonoBehaviour
         }
 
         Debug.Log("✅ Quiz fechado e jogador destravado.");
+    }
+
+    // 🔹 Mostra o botão de avançar era
+    void MostrarBotaoAvancarEra()
+    {
+        if (botaoAvancarEra != null)
+        {
+            botaoAvancarEra.SetActive(true);
+            textoBotaoAvancarEra.text = emIngles ? "Next Era" : "Avançar Era  ";
+            Debug.Log("🟢 Botão de avançar era ativado!");
+        }
+    }
+
+    // 🔹 Chamado quando o jogador clica no botão
+    public void BotaoAvancarEra()
+    {
+        if (Contador.instance != null)
+        {
+            Contador.instance.AvancarEra(); // muda a era
+            Debug.Log("🏆 Era avançada com sucesso!");
+        }
+
+        if (botaoAvancarEra != null)
+            botaoAvancarEra.SetActive(false); // esconde de novo
     }
 }

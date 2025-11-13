@@ -20,7 +20,8 @@ public class IdiomaDicas : MonoBehaviour
         "Dica:\nPara aumentar o pulo use J e só pode usar 3 vezes esse super pulo. E recupera a energia depois de um tempo.",
         "Dica:\nPara desviar dos espinhos ou das pontes que somem e reaparecem tente pegar o time bom e parar o tempo usando F.",
         "Dica:\nDepois de toda era tem uma quest. Só passará se acertar.",
-        "Dica:\nPara passar do puzzle das tochas tente clicar bem no fogo da tocha na ordem correta."
+        "Dica:\nPara Passar do Puzzle das tochas clique T em cima delas e no puzzle final delas clique em cada tocha certinho na ordem correta.",
+        "Dica:\nPara passar do puzzle dos Sinos clique em T em cada um deles na ordem correta."
     };
 
     // Dicas em Inglês
@@ -30,7 +31,8 @@ public class IdiomaDicas : MonoBehaviour
         "Hint:\nTo increase your jump use J — you can use the super jump 3 times and it recharges after a while.",
         "Hint:\nTo avoid spikes or bridges that disappear and reappear, try to get the timing right and stop time using F.",
         "Hint:\nAfter each era there is a quest. You will only pass if you answer correctly.",
-        "Hint:\nTo complete the torch puzzle, try clicking right on the fire of each torch in the correct order."
+        "Hint:\nTo get past the torch puzzle, click T on them, and in their final puzzle, click each torch correctly in the right order",
+        "Hint:\nTo get past the Bell puzzle, click T on each of them in the correct order."
     };
 
     void Start()

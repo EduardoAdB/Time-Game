@@ -11,7 +11,7 @@ public class Tochas : MonoBehaviour
     [SerializeField] GameObject tochaAmarelaPrefab;
     [SerializeField] GameObject itemUI;
     [SerializeField] private Collider2D portaoCollider;
-
+    [SerializeField] private SpriteRenderer portaoRenderer;
 
     float minX = -24.241f, maxX = -33.792f;
     float minY = -9.3f, maxY = -9.3f;
@@ -21,22 +21,13 @@ public class Tochas : MonoBehaviour
     List<string> ordemCorreta = new List<string>();
     List<string> cliquesDoJogador = new List<string>();
 
-    [SerializeField] private SpriteRenderer portaoRenderer;
     public bool portaoAberto = false;
-    
 
     void Start()
     {
         SpawnarTochas();
         GerarOrdemCorreta();
-        
-
     }
-
-
-   
-
-
 
     void SpawnarTochas()
     {
@@ -51,13 +42,10 @@ public class Tochas : MonoBehaviour
             { "amarela", tochaAmarelaPrefab }
         };
 
-        List<string> cores = new List<string>(coresPrefabs.Keys);
-
-        foreach (string cor in cores)
+        foreach (KeyValuePair<string, GameObject> entry in coresPrefabs)
         {
             Vector3 pos;
             int tentativas = 0;
-
             do
             {
                 pos = new Vector3(Random.Range(minX, maxX), Random.Range(minY, maxY), 0);
@@ -65,12 +53,10 @@ public class Tochas : MonoBehaviour
             } while (PosicaoMuitoPerto(pos) && tentativas < 100);
 
             posicoesUsadas.Add(pos);
-
-            GameObject tocha = Instantiate(coresPrefabs[cor], pos, Quaternion.identity);
-            
+            GameObject tocha = Instantiate(entry.Value, pos, Quaternion.identity);
 
             TochaClickavel click = tocha.AddComponent<TochaClickavel>();
-            click.Definir(this, cor); // Agora passamos a *cor* como identificador
+            click.Definir(this, entry.Key);
 
             tochas.Add(click);
         }
@@ -89,11 +75,8 @@ public class Tochas : MonoBehaviour
     void GerarOrdemCorreta()
     {
         ordemCorreta = new List<string> { "vermelha", "azul", "amarela", "laranja" };
-    
-
-    Debug.Log("Ordem correta: " + string.Join(" -> ", ordemCorreta));
+        Debug.Log("🕯️ Ordem correta: " + string.Join(" -> ", ordemCorreta));
     }
-
 
     public void TentarClicar(TochaClickavel tocha)
     {
@@ -103,7 +86,6 @@ public class Tochas : MonoBehaviour
         cliquesDoJogador.Add(cor);
         int idx = cliquesDoJogador.Count - 1;
 
-        // Evita erro de índice caso clique fora da sequência
         if (idx >= ordemCorreta.Count)
         {
             Debug.Log("❌ Clique extra! Reiniciando...");
@@ -115,7 +97,7 @@ public class Tochas : MonoBehaviour
         if (ordemCorreta[idx] == cor)
         {
             Debug.Log("✅ Cor correta clicada: " + cor);
-            StartCoroutine(tocha.PiscarAcerto()); // 💚 Pisca verde
+            StartCoroutine(tocha.PiscarAcerto());
 
             if (cliquesDoJogador.Count == ordemCorreta.Count)
             {
@@ -123,25 +105,19 @@ public class Tochas : MonoBehaviour
                 portaoAberto = true;
 
                 itemUI.SetActive(true);
-
                 if (portaoRenderer != null)
                     portaoRenderer.enabled = false;
-
                 if (portaoCollider != null)
                     portaoCollider.isTrigger = true;
             }
         }
         else
         {
-            Debug.Log("❌ Ordem incorreta. Clicou: " + cor + ", esperava: " + ordemCorreta[idx]);
-            StartCoroutine(tocha.PiscarErro()); // ❤️ Pisca vermelho se quiser mostrar o erro
+            Debug.Log($"❌ Ordem incorreta ({cor} em vez de {ordemCorreta[idx]}). Reiniciando...");
+            StartCoroutine(tocha.PiscarErro());
             ResetarTochas();
         }
     }
-
-
-
-
 
     void ResetarTochas()
     {
@@ -154,6 +130,7 @@ public class Tochas : MonoBehaviour
         SpawnarTochas();
         GerarOrdemCorreta();
     }
+
     public IEnumerator MostrarOrdem()
     {
         yield return StartCoroutine(PiscarTochasNaOrdem());
@@ -171,11 +148,4 @@ public class Tochas : MonoBehaviour
             }
         }
     }
-
-
-
-
-
-
-
 }
