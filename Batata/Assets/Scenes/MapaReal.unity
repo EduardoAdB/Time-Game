@@ -136258,11 +136258,11 @@ GameObject:
   m_Component:
   - component: {fileID: 2121400973}
   - component: {fileID: 2121400972}
-  - component: {fileID: 2121400987}
   - component: {fileID: 2121400971}
   - component: {fileID: 2121400978}
   - component: {fileID: 2121400974}
   - component: {fileID: 2121400976}
+  - component: {fileID: 2121400987}
   - component: {fileID: 2121400977}
   - component: {fileID: 2121400981}
   - component: {fileID: 2121400982}
@@ -136649,7 +136649,7 @@ MonoBehaviour:
   hora: 0
   ano: 0
   tempo: {fileID: 0}
-  epoca: {fileID: 1621772185}
+  epoca: {fileID: 0}
   botaoIdiomaTexto: {fileID: 0}
   era: 
   botaoAvancarEra: {fileID: 0}

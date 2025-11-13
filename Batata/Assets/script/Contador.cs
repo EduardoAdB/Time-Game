@@ -14,17 +14,18 @@ public class Contador : MonoBehaviour
     int tDia;
     int mes;
     public int ano;
+
     [SerializeField] TextMeshProUGUI tempo;
     [SerializeField] TextMeshProUGUI epoca;
     [SerializeField] TextMeshProUGUI botaoIdiomaTexto;
 
     int tickLog = 250;
-    public static bool isTimeFrozen = false;
+    public static bool isTimeFrozen = false; // controla se o tempo do MUNDO está pausado
     public string era;
     bool isEnglish = false;
 
     [Header("Botão de Avançar Era")]
-    [SerializeField] private Button botaoAvancarEra; // botão da UI
+    [SerializeField] private Button botaoAvancarEra;
     [SerializeField] private TMP_Text textoBotaoAvancarEra;
     private bool podeAvancar = false;
 
@@ -47,13 +48,28 @@ public class Contador : MonoBehaviour
 
         if (botaoAvancarEra != null)
         {
-            botaoAvancarEra.gameObject.SetActive(false); // começa invisível
+            botaoAvancarEra.gameObject.SetActive(false);
             botaoAvancarEra.onClick.AddListener(AoClicarAvancarEra);
         }
     }
 
     void Update()
     {
+        // 🔹 Alternar pausa seletiva
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            isTimeFrozen = !isTimeFrozen;
+            Debug.Log(isTimeFrozen ? "⏸️ Tempo parado (Moai pode se mover)" : "▶️ Tempo retomado");
+        }
+
+        // 🔹 Alternar velocidade do tempo (só afeta os que usam o contador)
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            tickLog = (tickLog == 250) ? 25 : 250;
+            Debug.Log("⚡ Velocidade do tempo: " + (tickLog == 25 ? "Rápida" : "Normal"));
+        }
+
+        // 🔹 Atualiza o tempo apenas se o tempo não estiver parado
         if (!isTimeFrozen)
         {
             AtualizarTempo();
@@ -67,7 +83,6 @@ public class Contador : MonoBehaviour
         {
             podeAvancar = true;
             botaoAvancarEra.gameObject.SetActive(true);
-
             textoBotaoAvancarEra.text = isEnglish ? "Advance Era" : "Avançar Era";
             Debug.Log("🟢 Botão de avançar era ativado!");
         }
@@ -103,9 +118,7 @@ public class Contador : MonoBehaviour
         AtualizarTextos();
 
         if (botaoAvancarEra != null && botaoAvancarEra.gameObject.activeSelf)
-        {
             textoBotaoAvancarEra.text = isEnglish ? "Advance Era" : "Avançar Era";
-        }
     }
 
     void AtualizarTextos()
@@ -153,7 +166,6 @@ public class Contador : MonoBehaviour
 
     public void AvancarEra()
     {
-
         if (era == "PréHistórica") era = "Medieval";
         else if (era == "Medieval") era = "Moderna";
         else if (era == "Moderna") Debug.Log("🏆 Todas as eras concluídas!");
@@ -161,5 +173,4 @@ public class Contador : MonoBehaviour
         AtualizarTextos();
         Debug.Log("🔄 Era avançada para: " + era);
     }
-
 }
